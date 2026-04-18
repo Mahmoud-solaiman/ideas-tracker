@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from 'bcrypt';
 import User from '../models/user.model';
-
+import jwt from 'jsonwebtoken';
 
 export const registerUser = async (req: Request, res: Response) => {
   try {
@@ -32,6 +32,43 @@ export const registerUser = async (req: Request, res: Response) => {
     await user.save();
 
     res.status(201).json({ message: 'User registered successfully'});
+    
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error});
+  }
+}
+
+export const loginUser = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+
+    // validation
+    if (!email || !password) {
+      return res.status(400).json({ message: 'All fields are require'});
+    }
+
+    // check user
+    const user = await User.findOne({ email});
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid credentials'});
+    }
+
+    // compare password
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid credentials'});
+    }
+
+    // generate token
+    const token = jwt.sign(
+      {id: user._id},
+      process.env.JWT_SECRET as string,
+      { expiresIn: '1d'}
+    );
+
+    res.status(200).json({ token });
     
   } catch (error) {
     res.status(500).json({ message: 'Server error', error});

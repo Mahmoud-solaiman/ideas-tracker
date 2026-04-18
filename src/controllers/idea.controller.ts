@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
+import { AuthRequest } from '../middleware/auth.middleware';
 import Idea  from '../models/idea.model';
 
-export const createIdea = async (req: Request, res: Response) => {
+export const createIdea = async (req: AuthRequest, res: Response) => {
   try {
     const { title, description } = req.body;
 
@@ -13,7 +14,7 @@ export const createIdea = async (req: Request, res: Response) => {
     const idea = new Idea({
       title,
       description,
-      user: '650c8127393e4a2d8c3f1a2b' // Fix later with authentication
+      user: req.user?.id // Fix later with authentication
     });
 
     const savedIdea = await idea.save();
@@ -25,9 +26,9 @@ export const createIdea = async (req: Request, res: Response) => {
   }
 }
 
-export const getIdeas = async (req: Request, res: Response) => {
+export const getIdeas = async (req: AuthRequest, res: Response) => {
   try {
-    const ideas = await Idea.find();
+    const ideas = await Idea.find({ user: req.user?.id});
 
     res.status(200).json(ideas);
   } catch (error) {
@@ -35,10 +36,10 @@ export const getIdeas = async (req: Request, res: Response) => {
   }
 }
 
-export const getIdeaById = async (req: Request, res: Response) => {
+export const getIdeaById = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
-    const idea = await Idea.findById(id);
+    const idea = await Idea.findById({ _id: id, user: req.user?.id});
 
     if (!idea) {
       return res.status(404).json({ message: 'Idea not found'});
@@ -52,12 +53,12 @@ export const getIdeaById = async (req: Request, res: Response) => {
 }
 
 
-export const updateIdea = async (req: Request, res: Response) => {
+export const updateIdea = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
     const { title, description } = req.body;
 
-    const idea = await Idea.findById(id);
+    const idea = await Idea.findOne({ _id: id, user: req.user?.id});
 
     if (!idea) {
       return res.status(404).json({ message: 'Idea not found'});
@@ -75,13 +76,14 @@ export const updateIdea = async (req: Request, res: Response) => {
   }
 }
 
-export const deleteIdea = async (req: Request, res: Response) => {
+export const deleteIdea = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
-    const deletedIdea = await Idea.findByIdAndDelete(id);
+    const idea = await Idea.findOne({ _id: id, user: req.user?.id});
 
-    if (!deletedIdea) return res.status(404).json({ message: 'Idea not found'});
+    if (!idea) return res.status(404).json({ message: 'Idea not found'});
 
+    await idea.deleteOne();
     res.status(200).json({ message: 'Idea deleted successfully'});
 
   } catch (error) {
