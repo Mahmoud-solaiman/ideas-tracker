@@ -1,0 +1,15 @@
+.idea-details-container {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 4em;
+  flex-direction: column;
+
+  h2 {
+    font-size: 3rem;
+  }
+
+  p {
+    font-size: 1.6rem;
+  }
+}

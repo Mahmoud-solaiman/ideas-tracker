@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import API from "../api/axios";
-
+import { useNavigate } from "react-router-dom";
+import './Login.css'
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   async function handleLogin() {
     try {
@@ -15,26 +17,38 @@ export default function Login() {
 
       localStorage.setItem('token', res.data.token);
 
-      alert('Login successful');
+      navigate('/ideas');
     } catch (error: any) {
       console.error(error.response?.data);
     }
   }
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) navigate('/ideas');
+  }, [navigate]);
+
   return (
-    <form action="/ideas">
+    <main className="login-container">
       <h2>Login</h2>
-      <input 
-        value={email}
-        placeholder="Enter your email" 
-        onChange={(e) => setEmail(e.target.value)} 
-      />
-      <input
-        placeholder="Enter your password"
-        type="password"
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button type="submit" onClick={handleLogin}>Login</button>
-    </form>
+      <form onSubmit={(e) =>{
+        e.preventDefault();
+        if (email && password)
+          handleLogin();
+      }}>
+        <input 
+          value={email}
+          placeholder="Enter your email" 
+          onChange={(e) => setEmail(e.target.value)} 
+        />
+        <input
+          placeholder="Enter your password"
+          type="password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button type="submit">Login</button>
+      </form>
+
+    </main>
   );
 }

@@ -1,0 +1,78 @@
+.ideas-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: 1rem;
+  padding-top: 2em;
+}
+
+.create-idea-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: 1rem;
+  width: 40%;
+}
+
+.create-idea-form > input,
+.create-idea-form > textarea,
+.create-idea-form > button {
+  width: 100%;
+  height: 40px;
+  font-size: 1.2rem;
+  padding: .3em;
+}
+
+.create-idea-form > button {
+  height: 35px;
+}
+
+.create-idea-form > textarea {
+  height: 200px;
+  resize: none;
+}
+
+.ideas-list {
+  list-style: none;
+  width: 40%;
+}
+
+.ideas-list > .idea-container {
+  display: flex;
+  align-items: center;
+  gap:.5rem;
+}
+
+.idea-container:not(:last-of-type) {
+  margin-bottom: .5rem;
+}
+
+.idea {
+  flex-grow: 1;
+  padding: .5em;
+  text-decoration: none;
+  color: #fff;
+  cursor: pointer;
+  display: block;
+  font-size: 1.3rem;
+
+  &:hover {
+    background-color: black;
+    border-radius: 5px;
+  }
+}
+
+.btns {
+  display: flex;
+  gap: 1rem;
+
+  button {
+    padding: .3em;
+    font-size: 1.3rem;
+  }
+}
+
+.logout-btn {
+  font-size: 1.3rem;
+  padding: .3em .6em;
+}

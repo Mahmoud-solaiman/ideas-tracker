@@ -65,8 +65,7 @@ export const updateIdea = async (req: AuthRequest, res: Response) => {
     if (!idea) {
       return res.status(404).json({ message: 'Idea not found' });
     }
-
-    // idea.title = title || idea.title;
+    
     Object.assign(idea, req.body);
     idea.description = description || idea.description;
 
