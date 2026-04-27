@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Idea } from "../utils/types";
 import API from "../api/axios";
 import './IdeaDetails.css';
@@ -8,26 +8,52 @@ export default function IdeaDetails() {
   const searchParams = useParams();
   const id = searchParams.id;
   const [ idea, setIdea ] = useState<Idea>();
-
-  console.log(id);
-  console.log(idea);
+  const [ title, setTitle ] = useState<string>('');
+  const [ description, setDescription ] = useState<string>('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchIdea() {
-      const idea = await API.get(`/ideas/${id}`);
+      const ideaRes = await API.get(`/ideas/${id}`);
       
-      setIdea(idea.data);
+      setIdea(ideaRes.data);
     }
 
     fetchIdea();
 
-  }, [id]);
+  }, [id, idea]);
+
+  function handleUpdate() {
+    if (title && description) {
+      API.put(`/ideas/${idea?._id}`, {
+        title,
+        description
+      });
+
+      navigate('/ideas');
+    }
+  }
   return (
     <main className="idea-details-container">
-      <h2 className="idea-title">{idea?.title}</h2>
-      <p className="idea-description">
-        {idea?.description}
-      </p>
+      <form onSubmit={e => {
+        e.preventDefault();
+        handleUpdate();
+      }}>
+        <input 
+          value={title}
+          name="title" 
+          type="text" 
+          onChange={(e) => setTitle(e.target.value)} 
+          placeholder="Update title" 
+        />
+        <textarea 
+          value={description}
+          name="description" 
+          onChange={(e) => setDescription(e.target.value)} 
+          placeholder="Update description" 
+        ></textarea>
+        <button type="submit">Update</button>
+      </form>
     </main>
   );
 }

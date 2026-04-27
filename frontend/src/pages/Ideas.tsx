@@ -10,6 +10,7 @@ export default function Ideas() {
   const [description, setDescription] = useState<string>('');
   const navigate = useNavigate();
 
+
   async function fetchIdeas() {
     const res = await API.get('/ideas');
     setIdeas(res.data);
